@@ -1,0 +1,12 @@
+[
+  { "name": "wine-story-app", "repo": "smhunt/wine-story-app" },
+  { "name": "computer-vision-utility-monitor", "repo": "smhunt/computer-vision-utility-monitor" },
+  { "name": "cursor-test", "repo": "smhunt/cursor-test" },
+  { "name": "DotNet8", "repo": "smhunt/DotNet8" },
+  { "name": "app-booker-ontario-med-clinics", "repo": "smhunt/app-booker-ontario-med-clinics" },
+  { "name": "kindred-app", "repo": "smhunt/kindred-app" },
+  { "name": "quadrant-vector-search-platform", "repo": "smhunt/quadrant-vector-search-platform" },
+  { "name": "gh-repo-creator", "repo": "smhunt/gh-repo-creator" },
+  { "name": "meter-reader-app-bygoogleaistudio", "repo": "smhunt/meter-reader-app-bygoogleaistudio" },
+  { "name": "Claude-News-chrome-extension", "repo": "smhunt/Claude-News-chrome-extension" }
+]
