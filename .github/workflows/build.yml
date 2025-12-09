@@ -1,0 +1,69 @@
+name: Refresh Stand-Up Dashboard
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Pull stand-up files
+        run: |
+          rm -rf repos
+          mkdir repos
+
+          for row in $(cat projects.json | jq -r '.[] | @base64'); do
+            _jq() { echo ${row} | base64 --decode | jq -r ${1}; }
+
+            NAME=$(_jq '.name')
+            REPO=$(_jq '.repo')
+
+            echo "Fetching $NAME..."
+            git clone --depth 1 https://github.com/$REPO repos/$NAME
+
+            if [ -f repos/$NAME/.claude/standup.md ]; then
+              cp repos/$NAME/.claude/standup.md "standup-$NAME.md"
+            else
+              echo "_no stand-up found_" > "standup-$NAME.md"
+            fi
+          done
+
+      - name: Build dashboard
+        run: |
+          echo "# Claude Multi-Project Stand-Up Dashboard" > README.md
+          echo "" >> README.md
+          echo "Auto-updated every 30 minutes." >> README.md
+          echo "" >> README.md
+          echo "---" >> README.md
+          echo "" >> README.md
+
+          for row in $(cat projects.json | jq -r '.[] | @base64'); do
+            _jq() { echo ${row} | base64 --decode | jq -r ${1}; }
+
+            NAME=$(_jq '.name')
+
+            echo "## $NAME" >> README.md
+            echo "" >> README.md
+            cat "standup-$NAME.md" >> README.md
+            echo "" >> README.md
+            echo "---" >> README.md
+            echo "" >> README.md
+          done
+
+      - name: Commit & Push results
+        run: |
+          git config user.name "claude-dashboard-bot"
+          git config user.email "bot@example.com"
+          git add README.md
+          git commit -m "Update dashboard" || echo "No changes"
+          git push
